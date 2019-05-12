@@ -1,5 +1,6 @@
 package com.company.model;
 
+import com.company.patterns.PupilDecorator;
 import com.company.patterns.PupilFactory;
 import com.company.patterns.StudentFactory;
 
@@ -20,6 +21,10 @@ public class Pupils {
             sum += pupil.getMark(i);
         }
         return  pupil.getSize() != 0 ?  sum / pupil.getSize() : 0;
+    }
+
+    public static Pupil getSynchronizedPupil(Pupil p) {
+        return new PupilDecorator(p);
     }
 
     public static void setFactory(PupilFactory pupilFactory) {

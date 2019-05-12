@@ -1,11 +1,22 @@
 package com.company.model;
 
+import com.company.patterns.Command;
+import com.company.patterns.CommandRowWriter;
+import com.company.patterns.Visitor;
+
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class Schoolboy implements Pupil{
     private String surname;
 
     private Register[] registers;
+
+    private Command command = new CommandRowWriter();
+
+    public Schoolboy() {}
 
     public Schoolboy(String surname, int registersSize) {
         this.surname = surname;
@@ -58,8 +69,27 @@ public class Schoolboy implements Pupil{
         return registers.length;
     }
 
+    public class SchoolboyIterator implements Iterator<Register> {
+        private int count = registers.length;
+        private int current = 0;
 
-    public class Register {
+        @Override
+        public boolean hasNext() {
+            return current < count;
+        }
+
+        @Override
+        public Register next() {
+            if (current < count) {
+                return registers[current++];
+            } else {
+                throw new NoSuchElementException("No such element.");
+            }
+        }
+    }
+
+
+    static class Register implements Serializable {
         int mark;
         String subject;
 
@@ -83,5 +113,26 @@ public class Schoolboy implements Pupil{
         public String getSubject() {
             return subject;
         }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
+
+        @Override
+        public String toString() {
+            return "Предмет: " + subject + " Оценка: " + mark;
+        }
+
+    }
+
+    @Override
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }
